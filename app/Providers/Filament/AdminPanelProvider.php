@@ -30,17 +30,17 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->colors([
                 'primary' => [
-                    50 => '240, 248, 255',  // Azul muy claro, casi blanco (similar a "AliceBlue")
-                    100 => '219, 234, 254',  // Azul pálido, suave
-                    200 => '191, 219, 254',  // Azul claro y suave
-                    300 => '147, 197, 253',  // Azul más brillante y vívido
-                    400 => '96, 165, 250',   // Azul cielo, brillante
-                    500 => '59, 130, 246',   // Azul medio, equilibrado y vibrante
-                    600 => '37, 99, 235',    // Azul más profundo y audaz
-                    700 => '29, 78, 216',    // Azul real y profundo
-                    800 => '30, 64, 175',    // Azul oscuro y elegante
-                    900 => '30, 58, 138',    // Azul noche, muy oscuro
-                    950 => '12, 24, 58',     // Azul casi negro, ideal para sombras o fondos oscuros
+                    50  => '238, 255, 255',  // Turquesa muy claro, casi blanco
+                    100 => '204, 255, 255',  // Turquesa claro
+                    200 => '164, 232, 233',  // Turquesa suave
+                    300 => '109, 213, 217',  // Turquesa fresco y vibrante
+                    400 => '56, 189, 197',    // Turquesa medio
+                    500 => '34, 185, 193',    // Turquesa brillante
+                    600 => '26, 139, 148',    // Turquesa más profundo
+                    700 => '19, 105, 111',     // Turquesa oscuro
+                    800 => '12, 71, 76',       // Turquesa intenso
+                    900 => '8, 43, 45',        // Turquesa muy oscuro
+                    950 => '3, 23, 24',        // Turquesa casi negro
                 ],
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

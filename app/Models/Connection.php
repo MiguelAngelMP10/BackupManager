@@ -14,7 +14,7 @@ class Connection extends Model
     protected $fillable = [
         'user_id',
         'name',
-        'type',
+        'driver',
         'host',
         'port',
         'database',
