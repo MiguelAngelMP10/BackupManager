@@ -14,9 +14,7 @@ class Backup extends Model
         'user_id',
         'connection_id',
         'storage_id',
-        'filename',
-        'size',
-        'created_at',
+        'file_name',
     ];
 
     /**

@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ConnectionResource\Pages;
-use App\Filament\Resources\ConnectionResource\RelationManagers;
-use App\Models\Connection;
+use App\Filament\Resources\BackupResource\Pages;
+use App\Filament\Resources\BackupResource\RelationManagers;
+use App\Models\Backup;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,11 +13,11 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class ConnectionResource extends Resource
+class BackupResource extends Resource
 {
-    protected static ?string $model = Connection::class;
+    protected static ?string $model = Backup::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-globe-alt';
+    protected static ?string $navigationIcon = 'heroicon-o-cloud-arrow-up';
 
     public static function form(Form $form): Form
     {
@@ -26,22 +26,13 @@ class ConnectionResource extends Resource
                 Forms\Components\Select::make('user_id')
                     ->relationship('user', 'name')
                     ->required(),
-                Forms\Components\TextInput::make('name')
+                Forms\Components\Select::make('connection_id')
+                    ->relationship('connection', 'name')
                     ->required(),
-                Forms\Components\TextInput::make('driver')
+                Forms\Components\Select::make('storage_id')
+                    ->relationship('storage', 'name')
                     ->required(),
-                Forms\Components\TextInput::make('host')
-                    ->required(),
-                Forms\Components\TextInput::make('port')
-                    ->required()
-                    ->numeric()
-                    ->default(3306),
-                Forms\Components\TextInput::make('database')
-                    ->required(),
-                Forms\Components\TextInput::make('username')
-                    ->required(),
-                Forms\Components\TextInput::make('password')
-                    ->password()
+                Forms\Components\TextInput::make('file_name')
                     ->required(),
             ]);
     }
@@ -53,18 +44,13 @@ class ConnectionResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('driver')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('host')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('port')
+                Tables\Columns\TextColumn::make('connection.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('database')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('username')
+                Tables\Columns\TextColumn::make('storage.name')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('file_name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -98,9 +84,9 @@ class ConnectionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListConnections::route('/'),
-            'create' => Pages\CreateConnection::route('/create'),
-            'edit' => Pages\EditConnection::route('/{record}/edit'),
+            'index' => Pages\ListBackups::route('/'),
+            'create' => Pages\CreateBackup::route('/create'),
+            'edit' => Pages\EditBackup::route('/{record}/edit'),
         ];
     }
 }
