@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Backup extends Model
 {
@@ -39,5 +40,9 @@ class Backup extends Model
     public function storage(): BelongsTo
     {
         return $this->belongsTo(Storage::class);
+    }
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
     }
 }

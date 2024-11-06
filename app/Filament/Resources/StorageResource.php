@@ -28,7 +28,8 @@ class StorageResource extends Resource
                     ->required(),
                 Forms\Components\TextInput::make('name')
                     ->required(),
-                Forms\Components\TextInput::make('type')
+                Forms\Components\Select::make('type')
+                    ->options(['local' => 'Local', 's3' => 'S3'])
                     ->required(),
                 Forms\Components\TextInput::make('path')
                     ->required(),
@@ -39,6 +40,39 @@ class StorageResource extends Resource
                 Forms\Components\TextInput::make('port'),
                 Forms\Components\TextInput::make('region'),
                 Forms\Components\TextInput::make('bucket'),
+
+                Forms\Components\Select::make('type')
+                    ->options([
+                        'employee' => 'Employee',
+                        'freelancer' => 'Freelancer',
+                    ])
+                    ->live()
+                    ->afterStateUpdated(fn(Forms\Components\Select $component) => $component
+                        ->getContainer()
+                        ->getComponent('dynamicTypeFields')
+                        ->getChildComponentContainer()
+                        ->fill()),
+
+                Forms\Components\Grid::make(2)
+                    ->schema(fn(Forms\Get $get): array => match ($get('type')) {
+                        'employee' => [
+                            Forms\Components\TextInput::make('employee_number')
+                                ->required(),
+                            Forms\Components\FileUpload::make('badge')
+                                ->image()
+                                ->required(),
+                        ],
+                        'freelancer' => [
+                            Forms\Components\TextInput::make('hourly_rate')
+                                ->numeric()
+                                ->required()
+                                ->prefix('€'),
+                            Forms\Components\FileUpload::make('contract')
+                                ->required(),
+                        ],
+                        default => [],
+                    })
+                    ->key('dynamicTypeFields')
             ]);
     }
 
