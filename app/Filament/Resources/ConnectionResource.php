@@ -54,7 +54,13 @@ class ConnectionResource extends Resource
                 Forms\Components\TextInput::make('username')
                     ->required(),
                 Forms\Components\TextInput::make('password')
+                    ->confirmed()
                     ->password()
+                    ->revealable()
+                    ->required(),
+                Forms\Components\TextInput::make('password_confirmation')
+                    ->password()
+                    ->revealable()
                     ->required(),
             ])->columns(4);
     }
@@ -113,7 +119,7 @@ class ConnectionResource extends Resource
                             'prefix' => '',
                         ];
 
-                        config(['database.connections.' . $record->driver => $config]);
+                        config(['database.connections.mysql_connect' => $config]);
 
                         try {
                             $connection = DB::connection($record->driver);

@@ -14,9 +14,7 @@ return new class extends Migration
         Schema::create('backups', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('connection_id')->constrained()->onDelete('cascade');
-            $table->foreignId('storage_id')->constrained()->onDelete('cascade');
-            $table->string('file_name'); // Nombre del archivo de respaldo
+                $table->string('file_name');
             $table->timestamps();
         });
     }
