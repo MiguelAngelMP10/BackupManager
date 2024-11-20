@@ -41,4 +41,13 @@ class Storage extends Model
     {
         return $this->hasMany(Backup::class);
     }
+
+
+    /**
+     * Relación con el modelo ScheduledTask
+     */
+    public function scheduledTasks(): HasMany
+    {
+        return $this->hasMany(ScheduledTask::class);
+    }
 }

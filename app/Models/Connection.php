@@ -37,4 +37,12 @@ class Connection extends Model
     {
         return $this->hasMany(Backup::class);
     }
+
+    /**
+     * Relación con el modelo scheduledTask
+     */
+    public function scheduledTasks(): HasMany
+    {
+        return $this->hasMany(Backup::class);
+    }
 }

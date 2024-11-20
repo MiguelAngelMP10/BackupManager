@@ -75,4 +75,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Backup::class);
     }
+
+    /**
+     * Relación con el modelo Backup
+     */
+    public function scheduledTask(): HasMany
+    {
+        return $this->hasMany(ScheduledTask::class);
+    }
 }

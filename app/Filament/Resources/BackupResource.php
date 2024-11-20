@@ -87,8 +87,6 @@ class BackupResource extends Resource
     {
         return [
             'index' => Pages\ListBackups::route('/'),
-            'create' => Pages\CreateBackup::route('/create'),
-            'edit' => Pages\EditBackup::route('/{record}/edit'),
         ];
     }
 }
