@@ -30,45 +30,23 @@ class StorageResource extends Resource
                     ->required(),
                 Forms\Components\Select::make('type')
                     ->options(['local' => 'Local', 's3' => 'S3'])
-                    ->required(),
-                Forms\Components\TextInput::make('path')
-                    ->required(),
-                Forms\Components\TextInput::make('host'),
-                Forms\Components\TextInput::make('username'),
-                Forms\Components\TextInput::make('password')
-                    ->password(),
-                Forms\Components\TextInput::make('port'),
-                Forms\Components\TextInput::make('region'),
-                Forms\Components\TextInput::make('bucket'),
-
-                Forms\Components\Select::make('type')
-                    ->options([
-                        'employee' => 'Employee',
-                        'freelancer' => 'Freelancer',
-                    ])
+                    ->required()
                     ->live()
                     ->afterStateUpdated(fn(Forms\Components\Select $component) => $component
                         ->getContainer()
                         ->getComponent('dynamicTypeFields')
                         ->getChildComponentContainer()
                         ->fill()),
-
-                Forms\Components\Grid::make(2)
+                Forms\Components\Grid::make(1)
                     ->schema(fn(Forms\Get $get): array => match ($get('type')) {
-                        'employee' => [
-                            Forms\Components\TextInput::make('employee_number')
-                                ->required(),
-                            Forms\Components\FileUpload::make('badge')
-                                ->image()
-                                ->required(),
+                        'local' => [
+                            Forms\Components\TextInput::make('path'),
                         ],
-                        'freelancer' => [
-                            Forms\Components\TextInput::make('hourly_rate')
-                                ->numeric()
-                                ->required()
-                                ->prefix('€'),
-                            Forms\Components\FileUpload::make('contract')
-                                ->required(),
+                        's3' => [
+                            Forms\Components\TextInput::make('access_key_id'),
+                            Forms\Components\TextInput::make('secret_access_key'),
+                            Forms\Components\TextInput::make('region'),
+                            Forms\Components\TextInput::make('bucket'),
                         ],
                         default => [],
                     })

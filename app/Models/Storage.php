@@ -19,6 +19,8 @@ class Storage extends Model
         'host',
         'username',
         'password',
+        'access_key_id',
+        'secret_access_key',
         'port',
         'region',
         'bucket',
