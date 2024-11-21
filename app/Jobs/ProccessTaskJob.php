@@ -78,7 +78,7 @@ class ProccessTaskJob implements ShouldQueue
             $backup->save();
 
             if (file_exists($backupPath)) {
-                unlink($backupPath);
+               // unlink($backupPath);
                 Log::info("Archivo eliminado correctamente.");
             } else {
                 Log::error("El archivo no existe: " . $backupPath);
