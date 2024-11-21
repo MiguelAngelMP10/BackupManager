@@ -59,7 +59,12 @@ class ProccessTaskJob implements ShouldQueue
 
             $disk = Storage::build($config);
 
-            $disk->put($s3Path, file_get_contents($backupPath));
+
+            if ($disk->put($s3Path, file_get_contents($backupPath))) {
+                Log::info("Respaldo subido a S3: {$s3Path}");
+            } else {
+                Log::info("Respaldo no subido a S3: {$s3Path}");
+            }
 
             $this->scheduledTask->last_executed_at = Carbon::now();
             $this->scheduledTask->save();
@@ -71,7 +76,6 @@ class ProccessTaskJob implements ShouldQueue
             $backup->file_name = $s3Path;
 
             $backup->save();
-            Log::info("Respaldo subido a S3: {$s3Path}");
 
             if (file_exists($backupPath)) {
                 unlink($backupPath);
