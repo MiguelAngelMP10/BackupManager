@@ -28,14 +28,10 @@ class CheckScheduledTasks extends Command
         $tasks = ScheduledTask::where('enabled', true)->get();
 
         foreach ($tasks as $task) {
-            Log::info("Checking scheduled task {$task->id} " . $task->isDue());
+            Log::info("Checking scheduled task {$task->id} " . $task->name);
             if ($task->isDue()) {
-                // Encola la tarea
-
                 ProccessTaskJob::dispatch($task)->onQueue('default');
-
                 Log::info("Task '{$task->name}' enqueued successfully.");
-
             }
         }
     }
