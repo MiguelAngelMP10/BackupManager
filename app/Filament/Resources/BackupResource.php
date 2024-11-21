@@ -7,11 +7,15 @@ use App\Filament\Resources\BackupResource\RelationManagers;
 use App\Models\Backup;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class BackupResource extends Resource
 {
@@ -34,12 +38,14 @@ class BackupResource extends Resource
                     ->required(),
                 Forms\Components\TextInput::make('file_name')
                     ->required(),
-            ]);
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->poll('10s')
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
                     ->numeric()
@@ -65,9 +71,35 @@ class BackupResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->modalWidth(MaxWidth::SevenExtraLarge)
+                    ->slideOver(),
+                Tables\Actions\DeleteAction::make()
+                    ->after(function ($record) {
+                        $storage = $record->storage;
+                        $config = [
+                            'driver' => 's3',
+                            'key' => $storage->access_key_id,
+                            'secret' => $storage->access_key_secret,
+                            'region' => $storage->region,
+                            'bucket' => $storage->bucket,
+                        ];
+
+                        $disk = Storage::build($config);
+
+                        if ($disk->exists($record->file_name)) {
+                            $disk->delete($record->file_name);
+                            Notification::make()
+                                ->title('Archivo eliminado correctamente de S3.')
+                                ->success()
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('El archivo no existe en S3.')
+                                ->danger()
+                                ->send();
+                        }
+                    })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
