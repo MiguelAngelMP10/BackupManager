@@ -38,7 +38,7 @@ class ProccessTaskJob implements ShouldQueue
         $storage = $this->scheduledTask->storage;
         $date = date('Y-m-d_H-i-s');
 
-        $backupPath = storage_path('app/Task_' . $this->scheduledTask->name . '_' . $date . '.sql');
+        $backupPath = storage_path('app/private/Task_' . $this->scheduledTask->name . '_' . $date . '.sql');
 
         $command = "mysqldump --user={$connection->username} --password={$connection->password} --host={$connection->host} {$connection->database} > {$backupPath}";
         exec($command, $output, $resultCode);
@@ -60,29 +60,38 @@ class ProccessTaskJob implements ShouldQueue
             $disk = Storage::build($config);
 
 
-            if ($disk->put($s3Path, file_get_contents($backupPath))) {
-                Log::info("Respaldo subido a S3: {$s3Path}");
-            } else {
-                Log::info("Respaldo no subido a S3: {$s3Path}");
-            }
+            // Acceder al archivo con Storage
+            if (Storage::disk('local')->exists('Task_' . $this->scheduledTask->name . '_' . $date . '.sql')) {
+                $content = Storage::disk('local')->get('Task_' . $this->scheduledTask->name . '_' . $date . '.sql');
+                echo $content;
+                if ($disk->put($s3Path, $content)) {
+                    Log::info("Respaldo subido a S3: {$s3Path}");
 
-            $this->scheduledTask->last_executed_at = Carbon::now();
-            $this->scheduledTask->save();
+                    $this->scheduledTask->last_executed_at = Carbon::now();
+                    $this->scheduledTask->save();
 
-            $backup = new Backup();
-            $backup->user_id = $connection->user_id;
-            $backup->connection_id = $connection->id;
-            $backup->storage_id = $storage->id;
-            $backup->file_name = $s3Path;
+                    $backup = new Backup();
+                    $backup->user_id = $connection->user_id;
+                    $backup->connection_id = $connection->id;
+                    $backup->storage_id = $storage->id;
+                    $backup->file_name = $s3Path;
 
-            $backup->save();
+                    $backup->save();
 
-            if (file_exists($backupPath)) {
-               // unlink($backupPath);
-                Log::info("Archivo eliminado correctamente.");
-            } else {
+                    if (file_exists($backupPath)) {
+                        unlink($backupPath);
+                        Log::info("Archivo eliminado correctamente.");
+                    } else {
+                        Log::error("El archivo no existe: " . $backupPath);
+                    }
+
+                } else {
+                    Log::info("Respaldo no subido a S3: {$s3Path}");
+                }
+            }else{
                 Log::error("El archivo no existe: " . $backupPath);
             }
+
 
         } else {
             Log::error("Error al realizar el respaldo.");
