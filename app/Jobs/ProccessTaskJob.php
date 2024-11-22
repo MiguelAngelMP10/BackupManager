@@ -64,7 +64,6 @@ class ProccessTaskJob implements ShouldQueue
             // Acceder al archivo con Storage
             if (Storage::disk('local')->exists('Task_' . $this->scheduledTask->name . '_' . $date . '.sql')) {
                 $content = Storage::disk('local')->get('Task_' . $this->scheduledTask->name . '_' . $date . '.sql');
-                echo $content;
                 if ($disk->put($s3Path, $content)) {
                     Log::info("Respaldo subido a S3: {$s3Path}");
 
