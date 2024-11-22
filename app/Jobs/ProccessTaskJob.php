@@ -55,6 +55,7 @@ class ProccessTaskJob implements ShouldQueue
                 'secret' => $storage->access_key_secret,
                 'region' => $storage->region,
                 'bucket' => $storage->bucket,
+                'debug' => true,
             ];
 
             $disk = Storage::build($config);
@@ -91,8 +92,6 @@ class ProccessTaskJob implements ShouldQueue
             }else{
                 Log::error("El archivo no existe: " . $backupPath);
             }
-
-
         } else {
             Log::error("Error al realizar el respaldo.");
         }
