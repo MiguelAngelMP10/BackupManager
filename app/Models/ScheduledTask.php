@@ -19,7 +19,6 @@ class ScheduledTask extends Model
         'enabled',
         'last_executed_at',
         'connection_id',
-        'storage_id',
     ];
 
     /**
@@ -45,13 +44,5 @@ class ScheduledTask extends Model
     public function connection(): BelongsTo
     {
         return $this->belongsTo(Connection::class);
-    }
-
-    /**
-     * Relación con el modelo Storage
-     */
-    public function storage(): BelongsTo
-    {
-        return $this->belongsTo(Storage::class);
     }
 }

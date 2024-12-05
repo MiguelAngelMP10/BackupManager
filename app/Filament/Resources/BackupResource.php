@@ -33,9 +33,6 @@ class BackupResource extends Resource
                 Forms\Components\Select::make('connection_id')
                     ->relationship('connection', 'name')
                     ->required(),
-                Forms\Components\Select::make('storage_id')
-                    ->relationship('storage', 'name')
-                    ->required(),
                 Forms\Components\TextInput::make('file_name')
                     ->required(),
             ])
@@ -51,9 +48,6 @@ class BackupResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('connection.name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('storage.name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('file_name')
@@ -76,16 +70,8 @@ class BackupResource extends Resource
                     ->slideOver(),
                 Tables\Actions\DeleteAction::make()
                     ->after(function ($record) {
-                        $storage = $record->storage;
-                        $config = [
-                            'driver' => 's3',
-                            'key' => $storage->access_key_id,
-                            'secret' => $storage->access_key_secret,
-                            'region' => $storage->region,
-                            'bucket' => $storage->bucket,
-                        ];
 
-                        $disk = Storage::build($config);
+                        $disk = Storage::disk('s3');
 
                         if ($disk->exists($record->file_name)) {
                             $disk->delete($record->file_name);

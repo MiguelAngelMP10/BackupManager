@@ -68,14 +68,6 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Relación con el modelo Storage
-     */
-    public function storages(): HasMany
-    {
-        return $this->hasMany(Storage::class);
-    }
-
-    /**
      * Relación con el modelo Backup
      */
     public function backups(): HasMany

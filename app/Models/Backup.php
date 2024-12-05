@@ -14,7 +14,6 @@ class Backup extends Model
     protected $fillable = [
         'user_id',
         'connection_id',
-        'storage_id',
         'file_name',
     ];
 
@@ -34,15 +33,8 @@ class Backup extends Model
         return $this->belongsTo(Connection::class);
     }
 
-    /**
-     * Relación con el modelo Storage
-     */
-    public function storage(): BelongsTo
+    public function scheduledTask(): HasMany
     {
-        return $this->belongsTo(Storage::class);
-    }
-    public function tasks(): HasMany
-    {
-        return $this->hasMany(Task::class);
+        return $this->hasMany(ScheduledTask::class);
     }
 }

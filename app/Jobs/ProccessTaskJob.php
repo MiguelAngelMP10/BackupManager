@@ -48,17 +48,7 @@ class ProccessTaskJob implements ShouldQueue
 
             $s3Path = 'backups/' . basename($backupPath);
 
-
-            $config = [
-                'driver' => 's3',
-                'key' => $storage->access_key_id,
-                'secret' => $storage->access_key_secret,
-                'region' => $storage->region,
-                'bucket' => $storage->bucket,
-                'debug' => true,
-            ];
-
-            $disk = Storage::build($config);
+            $disk = Storage::disk('s3');
 
 
             // Acceder al archivo con Storage
@@ -73,7 +63,6 @@ class ProccessTaskJob implements ShouldQueue
                     $backup = new Backup();
                     $backup->user_id = $connection->user_id;
                     $backup->connection_id = $connection->id;
-                    $backup->storage_id = $storage->id;
                     $backup->file_name = $s3Path;
 
                     $backup->save();

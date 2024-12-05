@@ -30,9 +30,6 @@ class ScheduledTaskResource extends Resource
                 Forms\Components\Select::make('connection_id')
                     ->relationship('connection', 'name')
                     ->required(),
-                Forms\Components\Select::make('storage_id')
-                    ->relationship('storage', 'name')
-                    ->required(),
                 Forms\Components\Select::make('cron_expression')
                     ->options([
                         '* * * * *' => 'Cada minuto (* * * * *)',
@@ -70,14 +67,6 @@ class ScheduledTaskResource extends Resource
                         '0 0 1,15 * *' => 'El día 1 y 15 de cada mes a medianoche (0 0 1,15 * *)',
                     ])
                     ->required(),
-                Forms\Components\Toggle::make('enabled')
-                    ->onColor('success')
-                    ->offColor('danger')
-                    ->inline(false)
-                    ->required(),
-                Forms\Components\DateTimePicker::make('last_executed_at')
-                    ->hidden(fn(string $context): bool => $context === 'create')
-                    ->disabled(fn(string $context): bool => $context === 'edit'),
                 Forms\Components\TextInput::make('name')
                     ->live(onBlur: true)
                     ->prefix('Task_')
@@ -86,9 +75,16 @@ class ScheduledTaskResource extends Resource
                     ->afterStateUpdated(function (Forms\Set $set, ?string $state, ?string $old) {
                         $set('name', str_replace(' ', '_', $state));
                     })
-                    ->columnSpanFull()
                     ->placeholder('name_other_test')
                     ->maxLength(255),
+                Forms\Components\DateTimePicker::make('last_executed_at')
+                    ->hidden(fn(string $context): bool => $context === 'create')
+                    ->disabled(fn(string $context): bool => $context === 'edit'),
+                Forms\Components\Toggle::make('enabled')
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->inline(false)
+                    ->required(),
             ])
             ->columns(2);
     }
@@ -101,10 +97,6 @@ class ScheduledTaskResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('connection.name')
-                    ->badge()
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('storage.name')
                     ->badge()
                     ->numeric()
                     ->sortable(),
