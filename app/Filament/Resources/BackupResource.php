@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use MrPowerUp\FilamentSqlField\FilamentSqlField;
 
 class BackupResource extends Resource
 {
@@ -65,11 +66,37 @@ class BackupResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('View Backup')
+                    ->fillForm(function (Backup $backup) {
+                        $content = Storage::disk('s3')->get($backup->file_name);
+                        return [
+                            'content' => $content
+                        ];
+                    })
+                    ->form([
+                        Forms\Components\Textarea::make('content')
+                            ->disabled()
+                            ->rows(50)
+                            ->columnSpanFull()
+                    ])
+                    ->modalWidth(MaxWidth::SevenExtraLarge)
+                    ->slideOver()
+                    ->icon('heroicon-m-viewfinder-circle'),
+
+                Tables\Actions\Action::make('Download Backup')
+                    ->icon('heroicon-m-arrow-down-tray')
+                    ->action(function (Backup $backup) {
+                        Notification::make()
+                            ->title('Download successfully')
+                            ->success()
+                            ->send();
+                        return Storage::disk('s3')->download($backup->file_name);
+                    }),
                 Tables\Actions\ViewAction::make()
                     ->modalWidth(MaxWidth::SevenExtraLarge)
                     ->slideOver(),
                 Tables\Actions\DeleteAction::make()
-                    ->after(function ($record) {
+                    ->after(function (Backup $record) {
 
                         $disk = Storage::disk('s3');
 
