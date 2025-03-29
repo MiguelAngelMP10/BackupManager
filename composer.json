@@ -10,7 +10,7 @@
         "bezhansalleh/filament-shield": "^3.2",
         "dragonmantank/cron-expression": "^3.4",
         "filament/filament": "^3.2",
-        "laravel/framework": "^11.9",
+        "laravel/framework": "^12.0",
         "laravel/tinker": "^2.9",
         "league/flysystem-aws-s3-v3": "^3.29",
         "mrpowerup/filament-sql-field": "^1.1",
@@ -23,7 +23,8 @@
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.1",
-        "phpunit/phpunit": "^11.0.1"
+        "phpunit/phpunit": "^11.0",
+        "pestphp/pest":"^3.0"
     },
     "autoload": {
         "psr-4": {
