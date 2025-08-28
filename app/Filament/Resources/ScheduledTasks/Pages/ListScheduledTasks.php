@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\ScheduledTaskResource\Pages;
+namespace App\Filament\Resources\ScheduledTasks\Pages;
 
-use App\Filament\Resources\ScheduledTaskResource;
+use Filament\Actions\CreateAction;
+use App\Filament\Resources\ScheduledTasks\ScheduledTaskResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -13,7 +14,7 @@ class ListScheduledTasks extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            CreateAction::make(),
         ];
     }
 }

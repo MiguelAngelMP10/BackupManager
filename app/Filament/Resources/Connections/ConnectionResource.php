@@ -1,13 +1,25 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\Connections;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\Connections\Pages\ListConnections;
+use App\Filament\Resources\Connections\Pages\CreateConnection;
+use App\Filament\Resources\Connections\Pages\EditConnection;
 use App\Filament\Resources\ConnectionResource\Pages;
 use App\Filament\Resources\ConnectionResource\RelationManagers;
 use App\Models\Connection;
 use Filament\Actions\ReplicateAction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -24,18 +36,18 @@ class ConnectionResource extends Resource
 {
     protected static ?string $model = Connection::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-globe-alt';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-globe-alt';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('user_id')
+        return $schema
+            ->components([
+                Select::make('user_id')
                     ->relationship('user', 'name')
                     ->required(),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->required(),
-                Forms\Components\Select::make('driver')
+                Select::make('driver')
                     ->options([
                         'mysql' => 'MySQL',
                         'mariadb' => 'MariaDB',
@@ -43,22 +55,22 @@ class ConnectionResource extends Resource
                         'sqlsrv' => 'SQL Server',
                     ])
                     ->required(),
-                Forms\Components\TextInput::make('host')
+                TextInput::make('host')
                     ->required(),
-                Forms\Components\TextInput::make('port')
+                TextInput::make('port')
                     ->required()
                     ->numeric()
                     ->default(3306),
-                Forms\Components\TextInput::make('database')
+                TextInput::make('database')
                     ->required(),
-                Forms\Components\TextInput::make('username')
+                TextInput::make('username')
                     ->required(),
-                Forms\Components\TextInput::make('password')
+                TextInput::make('password')
                     ->confirmed()
                     ->password()
                     ->revealable()
                     ->required(),
-                Forms\Components\TextInput::make('password_confirmation')
+                TextInput::make('password_confirmation')
                     ->password()
                     ->revealable()
                     ->required(),
@@ -69,28 +81,28 @@ class ConnectionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('driver')
+                TextColumn::make('driver')
                     ->badge()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('host')
+                TextColumn::make('host')
                     ->badge()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('port')
+                TextColumn::make('port')
                     ->badge()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('database')
+                TextColumn::make('database')
                     ->badge()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -98,12 +110,12 @@ class ConnectionResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ReplicateAction::make(),
-                Tables\Actions\Action::make('Test connection')
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
+                ReplicateAction::make(),
+                Action::make('Test connection')
                     ->icon('heroicon-o-globe-alt')
                     ->action(function (Connection $record) {
                         DB::purge($record->driver);
@@ -138,9 +150,9 @@ class ConnectionResource extends Resource
                         }
                     }),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -155,9 +167,9 @@ class ConnectionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListConnections::route('/'),
-            'create' => Pages\CreateConnection::route('/create'),
-            'edit' => Pages\EditConnection::route('/{record}/edit'),
+            'index' => ListConnections::route('/'),
+            'create' => CreateConnection::route('/create'),
+            'edit' => EditConnection::route('/{record}/edit'),
         ];
     }
 }

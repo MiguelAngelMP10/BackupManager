@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\ConnectionResource\Pages;
+namespace App\Filament\Resources\Connections\Pages;
 
-use App\Filament\Resources\ConnectionResource;
+use App\Filament\Resources\Connections\ConnectionResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 

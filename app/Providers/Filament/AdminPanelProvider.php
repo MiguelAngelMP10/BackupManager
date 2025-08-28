@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use Filament\Support\Enums\Width;
 use App\Filament\Pages\Dashboard;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
@@ -11,7 +12,6 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Support\Enums\MaxWidth;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -20,7 +20,6 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Saade\FilamentLaravelLog\FilamentLaravelLogPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -82,17 +81,11 @@ class AdminPanelProvider extends PanelProvider
                         'default' => 1,
                         'sm' => 2,
                     ]),
-                FilamentLaravelLogPlugin::make()
-                    ->navigationGroup('System Tools')
-                    ->navigationLabel('Logs')
-                    ->navigationIcon('heroicon-o-bug-ant')
-                    ->navigationSort(1)
-                    ->slug('logs')
             ])
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->maxContentWidth(maxContentWidth: MaxWidth::Full)
+            ->maxContentWidth(maxContentWidth: Width::Full)
             ->sidebarCollapsibleOnDesktop()
             ->sidebarFullyCollapsibleOnDesktop();
     }

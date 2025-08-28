@@ -1,14 +1,30 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\ScheduledTasks;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\ViewAction;
+use Filament\Support\Enums\Width;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\ScheduledTasks\Pages\ListScheduledTasks;
+use App\Filament\Resources\ScheduledTasks\Pages\CreateScheduledTask;
+use App\Filament\Resources\ScheduledTasks\Pages\EditScheduledTask;
 use App\Filament\Resources\ScheduledTaskResource\Pages;
 use App\Filament\Resources\ScheduledTaskResource\RelationManagers;
 use App\Models\ScheduledTask;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -18,19 +34,19 @@ class ScheduledTaskResource extends Resource
 {
     protected static ?string $model = ScheduledTask::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Hidden::make('user_id')
+        return $schema
+            ->components([
+                Hidden::make('user_id')
                     ->default(auth()->id())
                     ->required(),
-                Forms\Components\Select::make('connection_id')
+                Select::make('connection_id')
                     ->relationship('connection', 'name')
                     ->required(),
-                Forms\Components\Select::make('cron_expression')
+                Select::make('cron_expression')
                     ->options([
                         '* * * * *' => 'Cada minuto (* * * * *)',
                         '*/5 * * * *' => 'Cada 5 minutos (*/5 * * * *)',
@@ -67,20 +83,20 @@ class ScheduledTaskResource extends Resource
                         '0 0 1,15 * *' => 'El día 1 y 15 de cada mes a medianoche (0 0 1,15 * *)',
                     ])
                     ->required(),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->live(onBlur: true)
                     ->prefix('Task_')
                     ->suffix('_YYYY-MM-DD_HH-mm-ss')
                     ->required()
-                    ->afterStateUpdated(function (Forms\Set $set, ?string $state, ?string $old) {
+                    ->afterStateUpdated(function (Set $set, ?string $state, ?string $old) {
                         $set('name', str_replace(' ', '_', $state));
                     })
                     ->placeholder('name_other_test')
                     ->maxLength(255),
-                Forms\Components\DateTimePicker::make('last_executed_at')
+                DateTimePicker::make('last_executed_at')
                     ->hidden(fn(string $context): bool => $context === 'create')
                     ->disabled(fn(string $context): bool => $context === 'edit'),
-                Forms\Components\Toggle::make('enabled')
+                Toggle::make('enabled')
                     ->onColor('success')
                     ->offColor('danger')
                     ->inline(false)
@@ -93,29 +109,29 @@ class ScheduledTaskResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('connection.name')
+                TextColumn::make('connection.name')
                     ->badge()
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('cron_expression')
+                TextColumn::make('cron_expression')
                     ->badge()
                     ->searchable(),
-                Tables\Columns\IconColumn::make('enabled')
+                IconColumn::make('enabled')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('last_executed_at')
+                TextColumn::make('last_executed_at')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -123,16 +139,16 @@ class ScheduledTaskResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make()
-                ->modalWidth(MaxWidth::SevenExtraLarge)
+            ->recordActions([
+                ViewAction::make()
+                ->modalWidth(Width::SevenExtraLarge)
                 ->slideOver(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -147,9 +163,9 @@ class ScheduledTaskResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListScheduledTasks::route('/'),
-            'create' => Pages\CreateScheduledTask::route('/create'),
-            'edit' => Pages\EditScheduledTask::route('/{record}/edit'),
+            'index' => ListScheduledTasks::route('/'),
+            'create' => CreateScheduledTask::route('/create'),
+            'edit' => EditScheduledTask::route('/{record}/edit'),
         ];
     }
 }

@@ -1,15 +1,25 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\Backups;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Textarea;
+use Filament\Support\Enums\Width;
+use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\Backups\Pages\ListBackups;
 use App\Filament\Resources\BackupResource\Pages;
 use App\Filament\Resources\BackupResource\RelationManagers;
 use App\Models\Backup;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,19 +32,19 @@ class BackupResource extends Resource
 {
     protected static ?string $model = Backup::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-cloud-arrow-up';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-cloud-arrow-up';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('user_id')
+        return $schema
+            ->components([
+                Select::make('user_id')
                     ->relationship('user', 'name')
                     ->required(),
-                Forms\Components\Select::make('connection_id')
+                Select::make('connection_id')
                     ->relationship('connection', 'name')
                     ->required(),
-                Forms\Components\TextInput::make('file_name')
+                TextInput::make('file_name')
                     ->required(),
             ])
             ->columns(1);
@@ -45,19 +55,19 @@ class BackupResource extends Resource
         return $table
             ->poll('10s')
             ->columns([
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('connection.name')
+                TextColumn::make('connection.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('file_name')
+                TextColumn::make('file_name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -65,25 +75,25 @@ class BackupResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\Action::make('View Backup')
+            ->recordActions([
+                Action::make('View Backup')
                     ->fillForm(function (Backup $backup) {
                         $content = Storage::disk('s3')->get($backup->file_name);
                         return [
                             'content' => $content
                         ];
                     })
-                    ->form([
-                        Forms\Components\Textarea::make('content')
+                    ->schema([
+                        Textarea::make('content')
                             ->disabled()
                             ->rows(50)
                             ->columnSpanFull()
                     ])
-                    ->modalWidth(MaxWidth::SevenExtraLarge)
+                    ->modalWidth(Width::SevenExtraLarge)
                     ->slideOver()
                     ->icon('heroicon-m-viewfinder-circle'),
 
-                Tables\Actions\Action::make('Download Backup')
+                Action::make('Download Backup')
                     ->icon('heroicon-m-arrow-down-tray')
                     ->action(function (Backup $backup) {
                         Notification::make()
@@ -92,10 +102,10 @@ class BackupResource extends Resource
                             ->send();
                         return Storage::disk('s3')->download($backup->file_name);
                     }),
-                Tables\Actions\ViewAction::make()
-                    ->modalWidth(MaxWidth::SevenExtraLarge)
+                ViewAction::make()
+                    ->modalWidth(Width::SevenExtraLarge)
                     ->slideOver(),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->after(function (Backup $record) {
 
                         $disk = Storage::disk('s3');
@@ -114,9 +124,9 @@ class BackupResource extends Resource
                         }
                     })
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -131,7 +141,7 @@ class BackupResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBackups::route('/'),
+            'index' => ListBackups::route('/'),
         ];
     }
 }

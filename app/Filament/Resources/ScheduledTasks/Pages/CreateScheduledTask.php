@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\ScheduledTaskResource\Pages;
+namespace App\Filament\Resources\ScheduledTasks\Pages;
 
-use App\Filament\Resources\ScheduledTaskResource;
+use App\Filament\Resources\ScheduledTasks\ScheduledTaskResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
